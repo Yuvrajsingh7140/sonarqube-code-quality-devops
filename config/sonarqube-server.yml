@@ -1,0 +1,71 @@
+# SonarQube Server Configuration
+# This file contains configuration for SonarQube server setup
+
+# Server Settings
+server:
+  host: 0.0.0.0
+  port: 9000
+  context-path: /
+
+# Database Configuration
+database:
+  type: postgresql
+  host: postgres
+  port: 5432
+  name: sonarqube
+  username: sonarqube
+  password: sonarpass123
+
+# Security Settings
+security:
+  default-admin-password: admin
+  force-authentication: false
+
+# Quality Gates
+quality-gates:
+  default:
+    - name: "Coverage"
+      metric: "coverage"
+      operator: "LT"
+      threshold: "80.0"
+    - name: "Duplicated Lines (%)"
+      metric: "duplicated_lines_density"
+      operator: "GT"
+      threshold: "3.0"
+    - name: "Maintainability Rating"
+      metric: "sqale_rating"
+      operator: "GT"
+      threshold: "1"
+    - name: "Reliability Rating"
+      metric: "reliability_rating"
+      operator: "GT"
+      threshold: "1"
+    - name: "Security Rating"
+      metric: "security_rating"
+      operator: "GT"
+      threshold: "1"
+
+# Analysis Settings
+analysis:
+  default-exclusions:
+    - "**/*Test.java"
+    - "**/*Tests.java"
+    - "**/test/**"
+    - "**/target/**"
+    - "**/*Application.java"
+
+  coverage-exclusions:
+    - "**/*Application.java"
+    - "**/config/**"
+    - "**/dto/**"
+
+# Plugin Configuration
+plugins:
+  required:
+    - java
+    - jacoco
+    - junit
+  optional:
+    - findbugs
+    - checkstyle
+    - pmd

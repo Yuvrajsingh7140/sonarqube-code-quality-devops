@@ -1,0 +1,68 @@
+# Jenkins Plugins Required for SonarQube Integration
+# Install these plugins for full functionality
+
+# Core plugins
+ant:1.13
+build-timeout:1.29
+credentials-binding:523.vd859a_4b_122e6
+email-ext:2.97
+gradle:2.8
+ldap:2.12
+mailer:448.v5b_97805e3767
+matrix-auth:3.1.5
+pam-auth:1.10
+pipeline-build-step:2.18
+pipeline-graph-analysis:202.va_d268e64deb_3
+pipeline-input-step:448.v37cea_9a_10a_70
+pipeline-milestone-step:111.v449306f708b_7
+pipeline-stage-step:296.v5f6908f017a_5
+pipeline-stage-view:2.25
+ssh-slaves:2.916.vd17b_43357ce4
+timestamper:1.20
+workflow-aggregator:596.v8c21c963d92d
+workflow-job:1271.v54b_1c5fdfdfa_
+ws-cleanup:0.45
+
+# SonarQube Integration
+sonar:2.15
+
+# Git and SCM
+git:4.14.3
+github:1.37.3
+github-branch-source:1703.v94b_8b_390d51c
+
+# Build Tools
+maven-plugin:3.21
+gradle:2.8
+
+# Docker Support
+docker-plugin:1.2.10
+docker-workflow:563.vd5d2e5c4007f
+
+# Test Results
+junit:1171.va_f6d348e43e5
+jacoco:3.3.2
+
+# Notifications
+email-ext:2.97
+slack:631.v40deea_40323b
+
+# Quality Gates
+quality-gates:2.5
+
+# Pipeline Support
+pipeline-maven:1275.v764c1593fd8a
+pipeline-utility-steps:2.16.0
+
+# Security
+credentials:2.6.1
+credentials-binding:523.vd859a_4b_122e6
+
+# Monitoring
+monitoring:1.95.0
+metrics:4.2.13-420.vea_2c10a_d2107
+
+# Utilities
+build-name-setter:2.4.1
+description-setter:1.10
+environment-injector:2.908.v66a_774b_31d93

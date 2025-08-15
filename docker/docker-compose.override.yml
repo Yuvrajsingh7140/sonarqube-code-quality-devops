@@ -1,0 +1,33 @@
+# Docker Compose override for development
+version: '3.8'
+
+services:
+  calculator-app:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    volumes:
+      # Mount for hot reload during development
+      - ../target:/app/target:ro
+    environment:
+      - SPRING_PROFILES_ACTIVE=development
+      - LOGGING_LEVEL_COM_EXAMPLE_CALCULATOR=DEBUG
+    ports:
+      - "8080:8080"
+      - "8000:8000"  # Debug port
+    command: >
+      sh -c "java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+             -XX:+UseContainerSupport
+             -XX:MaxRAMPercentage=50.0
+             -Dspring.profiles.active=development
+             -jar app.jar"
+
+  sonarqube:
+    environment:
+      # Development-specific settings
+      SONAR_SEARCH_JAVAADDITIONALOPTS: "-Dbootstrap.system_call_filter=false"
+    volumes:
+      # Additional volume for development
+      - ../target:/tmp/target:ro

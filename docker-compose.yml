@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # SonarQube Server
+  sonarqube:
+    image: sonarqube:10.4-community
+    container_name: sonarqube-server
+    restart: unless-stopped
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: true
+      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonarqube
+      SONAR_JDBC_PASSWORD: sonarpass123
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    ports:
+      - "9000:9000"
+    networks:
+      - sonar-network
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/api/system/status | grep -q 'UP' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # PostgreSQL Database for SonarQube
+  postgres:
+    image: postgres:15-alpine
+    container_name: sonarqube-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sonarqube
+      POSTGRES_PASSWORD: sonarpass123
+      POSTGRES_DB: sonarqube
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - sonar-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonarqube -d sonarqube"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Calculator Application
+  calculator-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: calculator-application
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: -Xmx512m -Xms256m
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    depends_on:
+      - sonarqube
+
+  # Jenkins (Optional - for local development)
+  jenkins:
+    image: jenkins/jenkins:2.441-jdk17
+    container_name: jenkins-server
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - sonar-network
+      - app-network
+    environment:
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+    user: root  # Required for Docker socket access
+
+volumes:
+  sonarqube_data:
+    name: sonarqube_data
+  sonarqube_logs:
+    name: sonarqube_logs  
+  sonarqube_extensions:
+    name: sonarqube_extensions
+  postgresql_data:
+    name: postgresql_data
+  jenkins_home:
+    name: jenkins_home
+
+networks:
+  sonar-network:
+    name: sonar-network
+    driver: bridge
+  app-network:
+    name: app-network
+    driver: bridge
